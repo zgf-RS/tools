@@ -12,20 +12,44 @@ from requests.adapters import HTTPAdapter
 import geopandas as gpd
 import numpy as np
 import time
+import logging
+
 # # 设置环境变量
 # os.environ['http_proxy'] = 'http://127.0.0.1:7898'
 # os.environ['https_proxy'] = 'http://127.0.0.1:7898'
 
 def main():
-
-    basepath  = '/Users/zgf/Desktop/planetBasemap/106_21_107_26'
+    basepath  = '/Users/zgf/Desktop/planetBasemap/test'
+    log_path = f'{basepath}/run.log'
     geopath = os.path.join(basepath, '106_21_107_26.geojson')
+    # 1. 创建Logger对象
+    logger = logging.getLogger('my_logger')
+    logger.setLevel(logging.DEBUG)  # 设置日志级别
+
+    # 2. 创建一个文件处理器
+    file_handler = logging.FileHandler(log_path)  # 指定日志文件路径
+    file_handler.setLevel(logging.DEBUG)  # 设置处理器的日志级别
+
+    # 3. 创建一个控制台处理器
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.ERROR)  # 设置处理器的日志级别
+
+    # 4. 设置日志格式
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # 5. 将处理器添加到Logger对象
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    
     lindi = gpd.read_file(geopath)
     qqdate = lindi['QQ_month'].unique()
     hqdate = lindi['HQ_month'].unique()
     dateboth = np.unique(np.concatenate([qqdate, hqdate]))
-    dateboth = ['2023-11', '2023-12', '2024-02']
-    print('要下载的日期', dateboth)
+    # print('要下载的日期', dateboth)
+    logger.debug(f'要下载的日期:{dateboth}')
 
     for date in dateboth:
         idlistpos = f'{basepath}/PK_UID_link/{date}/'+'idlist.json'
@@ -83,8 +107,10 @@ def main():
             if not files:
                 continue
             for item in files:
-                print(item)
-        print(f'{date}下载完成')
+                # print(item)
+                logger.info(item)
+        # print(f'{date}下载完成')
+        logger.info(f'{date}下载完成')
         with open(f'{basepath}/datedownload.txt', 'a') as file:
             file.write(f'\n{date}')
 
@@ -204,9 +230,11 @@ class BasemapsClient(object):
         try:
             rv.raise_for_status()
         except HTTPError as e:
-            print(f"HTTP错误:{e.response.status_code},休息5分钟")
+            logger.debug(f"HTTP错误:{e.response.status_code},休息5分钟")
+            # print(f"HTTP错误:{e.response.status_code},休息5分钟")
             time.sleep(300)
-            print(f"休息完毕")
+            logger.info('休息完毕')
+            # print(f"休息完毕")
             rv.raise_for_status()
 
         return rv.json()
