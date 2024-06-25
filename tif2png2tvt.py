@@ -7,22 +7,33 @@ import shutil
 
 def tif2png2tvt(basePath, pngPath, tvtPath, ratio):
     imgids = os.listdir(basePath + 'A/')
-    os.makedirs(pngPath + 'A/')
+    os.makedirs(pngPath + 'A/', exist_ok=True)
     # 打开.tif图像文件
     for imgid in tqdm(imgids):
         if imgid[-4:] == '.tif':
             with Image.open(basePath + 'A/' + imgid) as img:
                 # 转换图像为PNG格式并保存
-                img.save(pngPath + 'A/'+ imgid[:-4]+'.png')
+                r, g, b, a = img.split()
+                # 合并这三个波段为新的RGB图像
+                img_rgb = Image.merge("RGB", (r, g, b))
+                
+                # 转换图像为PNG格式并保存
+                img_rgb.save(pngPath + 'A/' + imgid[:-4] + '.png')
+                # img.save(pngPath + 'A/'+ imgid[:-4]+'.png')
 
     imgids = os.listdir(basePath + 'B/')
-    os.makedirs(pngPath + 'B/')
+    os.makedirs(pngPath + 'B/', exist_ok=True)
     # 打开.tif图像文件
     for imgid in tqdm(imgids):
         if imgid[-4:] == '.tif':
             with Image.open(basePath + 'B/' + imgid) as img:
                 # 转换图像为PNG格式并保存
-                img.save(pngPath + 'B/'+ imgid[:-4]+'.png')
+                r, g, b, a = img.split()
+                # 合并这三个波段为新的RGB图像
+                img_rgb = Image.merge("RGB", (r, g, b))
+                
+                # 转换图像为PNG格式并保存
+                img_rgb.save(pngPath + 'B/' + imgid[:-4] + '.png')
 
     os.makedirs(pngPath + 'label/', exist_ok=True)
     imgids = os.listdir(basePath + 'label/')
@@ -75,7 +86,7 @@ def tif2png2tvt(basePath, pngPath, tvtPath, ratio):
 
     # 根据切分情况，划分三个集合
     for huafen in ['train', 'val', 'test']:
-        savetvtPath = tvtPath + huafen
+        savetvtPath = tvtPath + huafen + '/'
         os.makedirs(savetvtPath  + 'A/',exist_ok=True)
         os.makedirs(savetvtPath  + 'B/',exist_ok=True)
         os.makedirs(savetvtPath  + 'label/',exist_ok=True)
@@ -91,9 +102,9 @@ def tif2png2tvt(basePath, pngPath, tvtPath, ratio):
             shutil.copy(l, ll)
 
 if __name__ == '__main__':
-    basePath = '/Users/zgf/Desktop/训练数据集/C106_21_107_26/'
-    pngPath = basePath + '_png/'
-    tvtPath = basePath + '_tvt/'
+    basePath = '/Users/zgf/Desktop/训练数据集/C105_24_106_25/'
+    pngPath = basePath[:-1] + '_png/'
+    tvtPath = basePath[:-1] + '_tvt/'
     # train val test
     ratio = [0.8, 0.1, 0.1]
-    tif2png(basePath, pngPath, tvtPath, ratio)
+    tif2png2tvt(basePath, pngPath, tvtPath, ratio)
