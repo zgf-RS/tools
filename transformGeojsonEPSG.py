@@ -12,4 +12,5 @@ if __name__ == '__main__':
     geojson4326 = f'{Basemappath}/{partition}/{partition}.geojson'
     geojson3857 = f'{Basemappath}/{partition}/{partition}_3857.geojson'
     targetepsg = 3857
+    transform(geojson4326, geojson3857, targetepsg)
 
