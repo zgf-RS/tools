@@ -15,13 +15,13 @@ import time
 import logging
 
 # # 设置环境变量
-# os.environ['http_proxy'] = 'http://127.0.0.1:7898'
-# os.environ['https_proxy'] = 'http://127.0.0.1:7898'
+os.environ['http_proxy'] = 'http://127.0.0.1:7898'
+os.environ['https_proxy'] = 'http://127.0.0.1:7898'
 
 def main():
-    basepath  = '/Users/zgf/Desktop/planetBasemap/test'
+    basepath  = 'D:/DATA/107_24_108_26'
     log_path = f'{basepath}/run.log'
-    geopath = os.path.join(basepath, '106_21_107_26.geojson')
+    geopath = os.path.join(basepath, '107_24_108_26.geojson')
     # 1. 创建Logger对象
     logger = logging.getLogger('my_logger')
     logger.setLevel(logging.DEBUG)  # 设置日志级别
